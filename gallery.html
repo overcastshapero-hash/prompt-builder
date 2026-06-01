@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>提示词画廊 · Prompt Gallery</title>
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="description" content="177 个网页设计提示词卡片，浏览风格 → 一键复制 → 丢给 AI 生成同款网页。SaaS、Agency、Portfolio、3D 等方向全覆盖。"/><meta property="og:title" content="提示词画廊 · Prompt Gallery"/><meta property="og:description" content="177 个网页设计提示词灵感库，一键复制提示词给 AI 生成同款网页。"/><meta property="og:type" content="website"/><title>提示词画廊 · Prompt Gallery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -120,6 +120,9 @@ nav{position:sticky;top:0;z-index:50;background:rgba(8,9,13,.72);backdrop-filter
 .btn-p:hover{background:#23262d}.btn-p.done{background:rgba(236,255,62,.16);color:var(--lime);border-color:rgba(236,255,62,.3)}
 .btn-s{background:none;color:var(--muted);border:1px solid var(--line)}
 .btn-s:hover{color:var(--text);border-color:var(--line2)}
+/* focus ring for keyboard nav */
+.feat-media:focus-visible,.thumb.live:focus-visible{outline:2px solid var(--lime);outline-offset:3px;border-radius:14px}
+.card:focus-within{outline:2px solid var(--lime);outline-offset:4px;border-radius:14px}
 .full{display:none;margin-top:10px;background:#0b0d12;border:1px solid var(--line);border-radius:10px;padding:13px;font-size:12px;line-height:1.6;color:#aab2bd;white-space:pre-wrap;max-height:240px;overflow:auto}
 .full.show{display:block}
 /* makers */
@@ -164,7 +167,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-s
 
 <section id="featured"><div class="wrap">
   <div class="featured">
-    <div class="feat-media"><span class="pill">本站精选</span><iframe src="previews/liquid-glass-agency.html" title="featured" loading="lazy"></iframe></div>
+    <div class="feat-media" tabindex="0" role="button" aria-label="预览 Liquid Glass Agency 实时网页" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="pill">本站精选</span><iframe src="previews/liquid-glass-agency.html" title="featured" loading="lazy"></iframe></div>
     <div class="feat-info">
       <div class="lbl">精选作品 · 收录于 2026 年 6 月</div>
       <h2>Liquid Glass Agency</h2>
@@ -240,7 +243,7 @@ function draw(){
  document.getElementById('g').innerHTML=list.map(d=>{
  const i=DATA.indexOf(d);const a=ac(d.cat);const hasFull=d.free&&PROMPTS[d.id];const hasPv=PREVIEWS[d.id];
   const thumb=hasPv
-   ?'<div class="thumb live" data-act="preview" data-i="'+i+'"><iframe src="'+PREVIEWS[d.id]+'" loading="lazy" scrolling="no"></iframe><span class="pin">▶ 实时</span><div class="open" data-act="preview" data-i="'+i+'"><span>查看实时网页</span></div></div>'
+   ?'<div class="thumb live" tabindex="0" role="button" aria-label="预览 '+d.title+'" data-act="preview" data-i="'+i+'"><iframe src="'+PREVIEWS[d.id]+'" loading="lazy" scrolling="no"></iframe><span class="pin">▶ 实时</span><div class="open" data-act="preview" data-i="'+i+'"><span>查看实时网页</span></div></div>'
    :'<div class="thumb" style="--ac:'+a+'"><div class="shot" style="--ac:'+a+'"><div class="chrome"><i></i><i></i><i></i></div>'+shot(d.cat,d.title)+'</div><span class="free '+(d.free?'y':'n')+'">'+(d.free?'公开':'付费')+'</span></div>';
   const mark=hasPv?'Live Preview':(featuredIds.has(d.id)?'Featured':'');
   return '<div class="card">'+thumb+
@@ -260,11 +263,7 @@ modal.onclick=e=>{if(e.target===modal)closePreview();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('show'))closePreview();});
 document.querySelector('.feat-media').onclick=()=>openPreview('liquid-glass-agency','Liquid Glass Agency','Agency');
 document.querySelector('.fbtn').onclick=()=>openPreview('liquid-glass-agency','Liquid Glass Agency','Agency');
-document.getElementById('g').onclick=e=>{
- const t=e.target.closest('[data-act]');if(!t)return;const i=+t.dataset.i,d=DATA[i];
- if(t.dataset.act==='preview'){openPreview(d.id,d.title,d.cat);return;}
- if(t.dataset.act==='copy'){navigator.clipboard.writeText(promptOf(d));const o=t.textContent;t.textContent='已复制 ✓';t.classList.add('done');setTimeout(()=>{t.textContent=o;t.classList.remove('done')},1500);}
- else if(t.dataset.act==='view'){const f=document.getElementById('full'+i);f.classList.toggle('show');t.textContent=f.classList.contains('show')?'收起':'看全文';}
-};
+document.getElementById('g').onclick=e=>{const t=e.target.closest('[data-act]');if(!t)return;const i=+t.dataset.i,d=DATA[i];if(t.dataset.act==='preview'){openPreview(d.id,d.title,d.cat);return;}if(t.dataset.act==='copy'){navigator.clipboard.writeText(promptOf(d));const o=t.textContent;t.textContent='已复制 ✓';t.classList.add('done');setTimeout(()=>{t.textContent=o;t.classList.remove('done')},1500);}else if(t.dataset.act==='view'){const f=document.getElementById('full'+i);f.classList.toggle('show');t.textContent=f.classList.contains('show')?'收起':'看全文';}};
+document.getElementById('g').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;e.preventDefault();const t=e.target.closest('[data-act]');if(!t)return;const i=+t.dataset.i,d=DATA[i];if(t.dataset.act==='preview'){openPreview(d.id,d.title,d.cat);return;}if(t.dataset.act==='copy'){navigator.clipboard.writeText(promptOf(d));const o=t.textContent;t.textContent='已复制 ✓';t.classList.add('done');setTimeout(()=>{t.textContent=o;t.classList.remove('done')},1500);}else if(t.dataset.act==='view'){const f=document.getElementById('full'+i);f.classList.toggle('show');t.textContent=f.classList.contains('show')?'收起':'看全文';}});
 draw();
 </script></body></html>
