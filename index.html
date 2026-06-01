@@ -67,7 +67,7 @@ pre{background:#05050c;border:1px solid var(--line);border-radius:12px;padding:1
 <body>
 <div class="wrap">
   <h1>Hero <em>提示词</em> 工坊</h1>
-  <p class="lede">挑一张做好的风格卡 → 选页面类型 → 填你的内容 → 一键复制专业级提示词。风格 / 配色 / 字体 / 技术栈 / 设计护栏都帮你写好了——技术栈预设校准自 MotionSites 177 张真实卡片,你只管填内容。</p>
+  <p class="lede">挑一张做好的风格卡 → 选页面类型 → 填你的内容 → 一键复制专业级提示词。风格 / 配色 / 字体 / 技术栈 / 设计护栏都帮你写好了——技术栈预设来自 177 个真实网页设计方向的统计,你只管填内容。</p>
 
   <p class="section-t"><span class="step">1</span> 挑风格</p>
   <div class="cats" id="cats"></div>
@@ -105,7 +105,7 @@ pre{background:#05050c;border:1px solid var(--line);border-radius:12px;padding:1
       </div>
       <div class="field">
         <label>技术栈</label>
-        <p class="hint">预设来自 MotionSites 真实卡片的主流组合,点一下填入,可再改。</p>
+        <p class="hint">预设来自主流网页项目的技术栈组合,点一下填入,可再改。</p>
         <div class="seg" id="stackseg" style="margin-bottom:8px"></div>
         <input type="text" id="stack" value="React, Vite, TypeScript, Tailwind, Framer Motion, Lucide, Google Fonts">
       </div>
@@ -153,7 +153,7 @@ const BLOCKS = {
   "注册 / 候补页":{zh:"左文案右表单(或居中表单)+ 邮箱输入 + 提交按钮 + 社会证明,干净聚焦",en:"copy alongside a signup/waitlist form (email input + submit) + social proof, clean and focused"},
 };
 
-// ---- 技术栈预设:统计自 MotionSites 64 张可访问卡片的真实主流组合 ----
+// ---- 技术栈预设:统计自主流网页项目的常见技术栈组合 ----
 const STACKS={
   "标准主流":"React, Vite, TypeScript, Tailwind, Framer Motion, Lucide, Google Fonts",
   "含 3D":"React, Vite, TypeScript, Tailwind, Framer Motion, Lucide, Three.js, Google Fonts",
