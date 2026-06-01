@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hero 提示词工坊</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Playfair+Display:wght@700;900&family=Space+Grotesk:wght@500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--purple:#7b39fc;--orange:#f87b52;--ink:#08080f;--panel:#0e0f1a;--line:#ffffff14;--text:#e8eaf6;--muted:#8b90a8}
+body{background:var(--ink);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;
+  background-image:radial-gradient(700px 460px at 12% -8%,#7b39fc24,transparent 60%),radial-gradient(600px 460px at 100% 6%,#f87b5216,transparent 60%);}
+.wrap{max-width:1240px;margin:0 auto;padding:42px 24px 90px}
+h1{font-family:'Manrope',sans-serif;font-weight:800;font-size:31px;letter-spacing:-.02em}
+h1 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;background:linear-gradient(120deg,var(--purple),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 .05em}
+.lede{color:var(--muted);font-size:14.5px;margin:10px 0 26px;line-height:1.6;max-width:680px}
+.section-t{font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:34px 0 14px;display:flex;align-items:center;gap:10px}
+.step{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;align-items:center;justify-content:center;font-family:'Manrope';font-weight:700}
+
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.cat{background:#05050c;border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .18s;font-family:inherit}
+.cat:hover{color:var(--text);border-color:#ffffff30}
+.cat.on{background:#fff;color:#08080f;border-color:transparent;font-weight:600}
+
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:860px){.gallery{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.gallery{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;background:var(--panel);transition:transform .2s,border-color .2s,box-shadow .2s}
+.card:hover{transform:translateY(-3px);border-color:#ffffff33;box-shadow:0 16px 40px -18px #000}
+.card.on{border-color:var(--purple);box-shadow:0 0 0 1px var(--purple),0 16px 40px -18px #7b39fc88}
+.preview{height:118px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.preview span{font-size:20px;font-weight:800;letter-spacing:-.02em;padding:0 16px;text-align:center;line-height:1.1;z-index:1}
+.preview .px{position:absolute;inset:0;opacity:.5;mix-blend-mode:overlay;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:9px 9px}
+.card-meta{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-name{font-family:'Manrope',sans-serif;font-weight:700;font-size:14px}
+.card-cat{font-size:11px;color:var(--muted);background:#05050c;border:1px solid var(--line);padding:3px 8px;border-radius:6px;white-space:nowrap}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;margin-top:14px}
+@media(max-width:880px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+.field{margin-bottom:18px}.field:last-child{margin-bottom:0}
+label{display:block;font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;margin-bottom:4px}
+.hint{color:var(--muted);font-size:12px;margin-bottom:8px;line-height:1.5}
+input[type=text]{width:100%;background:#05050c;border:1px solid var(--line);border-radius:10px;padding:10px 13px;color:var(--text);font-size:14px;font-family:inherit;transition:border-color .2s}
+input[type=text]:focus{outline:none;border-color:var(--purple)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{background:#05050c;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:12.5px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .18s}
+.seg button:hover{color:var(--text);border-color:#ffffff30}
+.seg button.on{background:linear-gradient(180deg,#8f54ff,var(--purple));border-color:transparent;color:#fff;font-weight:600}
+.locked{font-size:12.5px;color:var(--muted);background:#05050c;border:1px solid var(--line);border-radius:9px;padding:9px 12px;line-height:1.5}
+.locked b{color:#cdd2ea;font-weight:600}
+
+.out{position:sticky;top:20px}
+.out h2{font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.out-actions{display:flex;gap:8px;align-items:center}
+.lang{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.lang button{background:#05050c;border:none;color:var(--muted);font-size:12px;padding:6px 11px;cursor:pointer;font-family:inherit}
+.lang button.on{background:#1c1f33;color:#fff;font-weight:600}
+.copy{background:linear-gradient(180deg,#8f54ff,var(--purple));border:none;color:#fff;font-family:'Manrope',sans-serif;font-weight:600;font-size:13px;padding:8px 16px;border-radius:9px;cursor:pointer;transition:transform .15s,background .2s;box-shadow:0 6px 18px -6px #7b39fcaa}
+.copy:hover{transform:translateY(-1px)}
+.copy.done{background:linear-gradient(180deg,#3ecf8e,#27a36b)}
+pre{background:#05050c;border:1px solid var(--line);border-radius:12px;padding:18px;font-size:12.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word;font-family:'Inter',sans-serif;color:#cdd2ea;max-height:520px;overflow:auto}
+.tip{margin-top:15px;font-size:12.5px;color:var(--muted);line-height:1.6;background:#7b39fc10;border:1px solid #7b39fc28;border-radius:10px;padding:13px 15px}
+.tip b{color:#c9b6ff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Hero <em>提示词</em> 工坊</h1>
+  <p class="lede">挑一张做好的风格卡 → 选页面类型 → 填你的内容 → 一键复制专业级提示词。风格 / 配色 / 字体 / 技术栈 / 设计护栏都帮你写好了——技术栈预设校准自 MotionSites 177 张真实卡片,你只管填内容。</p>
+
+  <p class="section-t"><span class="step">1</span> 挑风格</p>
+  <div class="cats" id="cats"></div>
+  <div class="gallery" id="gallery"></div>
+
+  <p class="section-t"><span class="step">2</span> 选页面类型 + 填内容</p>
+  <div class="grid">
+    <div class="panel">
+      <div class="field">
+        <label>页面区块</label>
+        <p class="hint">决定提示词里"结构"那段。不同区块,结构不一样。</p>
+        <div class="seg" id="block"></div>
+      </div>
+      <div class="field">
+        <label>选中的风格</label>
+        <div class="locked" id="lockedStyle">从上方挑一张卡</div>
+      </div>
+      <div class="field">
+        <label>产品名 + 一句话定位</label>
+        <p class="hint">它是干嘛的,决定文案语气。</p>
+        <input type="text" id="name" value="Datacore,实时网络管理平台">
+      </div>
+      <div class="field">
+        <label>徽章文案(标题上方小药丸,可留空)</label>
+        <input type="text" id="badge" value='"New" 标签 + "Say Hello to Datacore v3.2"'>
+      </div>
+      <div class="field">
+        <label>主标题</label>
+        <p class="hint">短、狠、有节奏。一句话说清你卖什么。</p>
+        <input type="text" id="headline" value="Your Networks. One Rapid Interface.">
+      </div>
+      <div class="field">
+        <label>两个按钮</label>
+        <input type="text" id="cta" value="Book a Free Demo + Get Started Now">
+      </div>
+      <div class="field">
+        <label>技术栈</label>
+        <p class="hint">预设来自 MotionSites 真实卡片的主流组合,点一下填入,可再改。</p>
+        <div class="seg" id="stackseg" style="margin-bottom:8px"></div>
+        <input type="text" id="stack" value="React, Vite, TypeScript, Tailwind, Framer Motion, Lucide, Google Fonts">
+      </div>
+    </div>
+
+    <div class="out">
+      <div class="panel">
+        <h2>
+          <span>提示词</span>
+          <span class="out-actions">
+            <span class="lang" id="lang"><button data-l="zh" class="on">中</button><button data-l="en">EN</button></span>
+            <button class="copy" id="copy">复制</button>
+          </span>
+        </h2>
+        <pre id="output"></pre>
+        <div class="tip"><b>用法:</b>复制 → 粘贴到 Claude / ChatGPT 回车。喂 AI 建议切 <b>EN</b>,出活更稳;换产品时风格不用动,只改内容。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- 风格库:每张卡 = 一套调好的成品风格 ----
+const TEMPLATES = [
+  {name:"Linear 暗色", cat:"SaaS", zhStyle:"Linear 风暗色科技,克制精致,大量留白与微妙发光", enStyle:"Linear-style dark techy aesthetic, restrained and refined, generous whitespace with subtle glows", bg:{zh:"暗色 + 紫橙双色光晕 + 细网格 + 颗粒",en:"dark base with twin purple/orange glow gradients, fine grid, grain"}, font:"Inter · Manrope · Instrument Serif", color:{zh:"主色 紫 #7b39fc + 点缀 橙 #f87b52",en:"primary purple #7b39fc, accent orange #f87b52"}, grad:"radial-gradient(120% 90% at 30% 0%,#7b39fc55,#0a0b14 60%)", fg:"#fff", ff:"'Manrope'", sample:"Your Networks. One Rapid Interface."},
+  {name:"Retro-Futurist", cat:"Hero", zhStyle:"复古未来主义,80s 霓虹网格,扫描线与发光边框", enStyle:"retro-futurist, 80s neon grid, scanlines and glowing borders", bg:{zh:"暗紫天空 + 霓虹日落 + 透视网格地面",en:"dark purple sky, neon sunset, perspective grid floor"}, font:"Space Grotesk · Inter", color:{zh:"主色 品红 #ff2e93 + 点缀 青 #00e5ff",en:"primary magenta #ff2e93, accent cyan #00e5ff"}, grad:"linear-gradient(180deg,#1a0b2e,#ff2e93 130%)", fg:"#00e5ff", ff:"'Space Grotesk'", sample:"The Future, Rewound."},
+  {name:"Dreamcore 梦核", cat:"Creative", zhStyle:"柔和梦核,奶油渐变,弥散光,圆润有机形状", enStyle:"soft dreamcore, creamy gradients, diffuse light, rounded organic shapes", bg:{zh:"粉紫蓝弥散渐变 + 柔光球 + 噪点",en:"pink-purple-blue diffuse gradient, soft light orbs, noise"}, font:"Instrument Serif · Inter", color:{zh:"主色 薰衣草 #b794f6 + 点缀 蜜桃 #fbb6ce",en:"primary lavender #b794f6, accent peach #fbb6ce"}, grad:"linear-gradient(140deg,#fbb6ce,#b794f6,#90cdf4)", fg:"#3a2a4d", ff:"'Instrument Serif'", sample:"Soft places to land."},
+  {name:"3D Collectible", cat:"3D Website", zhStyle:"暗色舞台聚光,3D 渲染主体居中,高饱和反射", enStyle:"dark spotlit stage, centered 3D-rendered hero object, saturated reflections", bg:{zh:"深黑舞台 + 顶部聚光 + 地面倒影",en:"deep black stage, top spotlight, floor reflection"}, font:"Manrope · Inter", color:{zh:"主色 电蓝 #3b82f6 + 点缀 荧光绿 #a3e635",en:"primary electric blue #3b82f6, accent lime #a3e635"}, grad:"radial-gradient(80% 70% at 50% 30%,#3b82f6,#05050c 70%)", fg:"#a3e635", ff:"'Manrope'", sample:"Own the drop."},
+  {name:"Minimal SaaS", cat:"SaaS", zhStyle:"极简留白,大量呼吸感,细线条,黑灰为主一点亮色", enStyle:"minimal, airy whitespace, thin lines, mostly black/grey with one accent", bg:{zh:"近白底 + 极淡网格 + 一抹品牌色光",en:"near-white base, faint grid, single soft brand-color glow"}, font:"Inter · Manrope", color:{zh:"主色 近黑 #111 + 点缀 靛蓝 #4f46e5",en:"primary near-black #111, accent indigo #4f46e5"}, grad:"linear-gradient(160deg,#f4f4f7,#e6e8f0)", fg:"#4f46e5", ff:"'Manrope'", sample:"Less tool. More done."},
+  {name:"Creative Agency", cat:"Agency", zhStyle:"野兽派编辑风,超大字撑满,粗黑边,不对称排版", enStyle:"neo-brutalist editorial, oversized type, thick black borders, asymmetric layout", bg:{zh:"亮色底 + 大色块 + 黑色粗边框",en:"bright base, big color blocks, heavy black frames"}, font:"Manrope · Inter", color:{zh:"主色 亮黄 #ffe600 + 点缀 纯黑 #000",en:"primary bright yellow #ffe600, accent pure black #000"}, grad:"linear-gradient(120deg,#ffe600,#ff8a00)", fg:"#000", ff:"'Manrope'", sample:"WE MAKE NOISE."},
+  {name:"Web3 EOS", cat:"Web3", zhStyle:"深空科技,玻璃质感,发光线框,渐变描边按钮", enStyle:"deep-space tech, glassmorphism, glowing wireframes, gradient-bordered buttons", bg:{zh:"深空蓝紫 + 星点 + 中心发光球体",en:"deep-space blue-purple, starfield, central glowing orb"}, font:"Space Grotesk · Inter", color:{zh:"主色 靛紫 #6366f1 + 点缀 青绿 #2dd4bf",en:"primary indigo #6366f1, accent teal #2dd4bf"}, grad:"radial-gradient(70% 80% at 50% 40%,#6366f1,#070914 72%)", fg:"#2dd4bf", ff:"'Space Grotesk'", sample:"Own your protocol."},
+  {name:"Editorial Portfolio", cat:"Portfolio", zhStyle:"杂志编辑风,衬线大标题,网格分栏,克制黑白", enStyle:"magazine editorial, serif display headings, column grid, restrained black & white", bg:{zh:"米白纸感 + 细分隔线 + 大量留白",en:"off-white paper, thin dividers, generous whitespace"}, font:"Playfair Display · Inter", color:{zh:"主色 墨黑 #1a1a1a + 点缀 砖红 #c0392b",en:"primary ink black #1a1a1a, accent brick red #c0392b"}, grad:"linear-gradient(160deg,#f7f3ec,#e8e0d3)", fg:"#1a1a1a", ff:"'Playfair Display'", sample:"Selected Works, 2026."},
+  {name:"Evergreen Fintech", cat:"Fintech", zhStyle:"沉稳金融科技,深绿基调,数据卡片,可信克制", enStyle:"calm fintech, deep-green base, data cards, trustworthy and restrained", bg:{zh:"深绿渐变 + 柔和网格 + 浮起数据卡",en:"deep-green gradient, soft grid, floating data cards"}, font:"Manrope · Inter", color:{zh:"主色 森林绿 #059669 + 点缀 金 #d4af37",en:"primary forest green #059669, accent gold #d4af37"}, grad:"linear-gradient(160deg,#064e3b,#022c22)", fg:"#d4af37", ff:"'Manrope'", sample:"Money that grows quietly."},
+];
+
+// ---- 页面区块:决定"结构"那段 ----
+const BLOCKS = {
+  "Hero 首屏":{zh:"徽章药丸 + 主标题(可含斜体强调词)+ 一句副标题 + 主/次双按钮 + 信任背书行(logo 或文字)",en:"a glass badge pill + headline (with an italic emphasis word) + one-line subhead + primary & secondary buttons + a trust row (logos or text)"},
+  "完整落地页":{zh:"Hero 首屏 + 功能区(3-4 张卡)+ 社会证明(logo 墙或数据)+ 简版定价 + 结尾大 CTA + 页脚",en:"a Hero section + a features grid (3-4 cards) + social proof (logo wall or stats) + a compact pricing block + a closing CTA + a footer"},
+  "功能展示区":{zh:"小标题 + 区块标题 + 3-6 个功能卡(图标 + 标题 + 一句描述),错落或交替图文布局",en:"an eyebrow label + section heading + 3-6 feature cards (icon + title + one-line desc), in an alternating or bento layout"},
+  "定价区":{zh:"区块标题 + 2-3 档定价卡(中间档高亮为推荐)+ 每档功能清单 + FAQ 折叠",en:"a section heading + 2-3 pricing tiers (middle tier highlighted as recommended) + per-tier feature list + a collapsible FAQ"},
+  "作品集网格":{zh:"标题 + 项目卡网格(缩略图 + 标题 + 分类标签),hover 放大或揭示",en:"a heading + a project card grid (thumbnail + title + category tag) with hover zoom/reveal"},
+  "CTA 召唤区":{zh:"居中大标题 + 一句话支撑 + 单个主按钮,强对比或发光背景,极简聚焦",en:"a centered big headline + one supporting line + a single primary button, high-contrast or glowing background, minimal and focused"},
+  "页脚 Footer":{zh:"多列链接 + 品牌区 + 邮件订阅输入框 + 社媒图标 + 版权行,可带大字品牌水印",en:"multi-column links + brand area + newsletter email input + social icons + copyright row, optionally a giant brand watermark"},
+  "注册 / 候补页":{zh:"左文案右表单(或居中表单)+ 邮箱输入 + 提交按钮 + 社会证明,干净聚焦",en:"copy alongside a signup/waitlist form (email input + submit) + social proof, clean and focused"},
+};
+
+// ---- 技术栈预设:统计自 MotionSites 64 张可访问卡片的真实主流组合 ----
+const STACKS={
+  "标准主流":"React, Vite, TypeScript, Tailwind, Framer Motion, Lucide, Google Fonts",
+  "含 3D":"React, Vite, TypeScript, Tailwind, Framer Motion, Lucide, Three.js, Google Fonts",
+  "含视频背景":"React, TypeScript, Tailwind, Framer Motion, Lucide, HLS video, Google Fonts",
+  "轻量":"React, Tailwind, Lucide",
+  "纯 HTML/CSS":"HTML, CSS, vanilla JS",
+};
+
+const GUARD = {
+  zh:"质量护栏:强视觉层次(标题极大、正文克制);留白有节奏不要塞满;一个主色大面积铺、点缀色只点睛;背景要有氛围和深度,禁止纯色平铺;加载时错落淡入动画,按钮 hover 微交互;完全响应式;避免廉价的 AI 模板感——不要居中堆叠的千篇一律布局,敢用不对称和留白。",
+  en:"Quality bar: strong visual hierarchy (huge headline, restrained body); rhythmic whitespace, never cramped; one dominant color with the accent used sparingly; atmospheric background with depth, never a flat fill; staggered fade-in on load and tasteful button hover micro-interactions; fully responsive; avoid generic AI-template look — skip the predictable centered stack, dare to use asymmetry and negative space.",
+};
+
+let activeCat="全部", activeIdx=0, activeBlock="Hero 首屏", lang="zh";
+
+const cats=["全部",...[...new Set(TEMPLATES.map(t=>t.cat))]];
+const catsEl=document.getElementById('cats');
+catsEl.innerHTML=cats.map((c,i)=>`<button class="cat${i?'':' on'}" data-c="${c}">${c}</button>`).join('');
+catsEl.addEventListener('click',e=>{if(!e.target.dataset.c)return;activeCat=e.target.dataset.c;catsEl.querySelectorAll('.cat').forEach(c=>c.classList.toggle('on',c.dataset.c===activeCat));renderGallery();});
+
+const blockEl=document.getElementById('block');
+blockEl.innerHTML=Object.keys(BLOCKS).map((b,i)=>`<button data-b="${b}" class="${i?'':'on'}">${b}</button>`).join('');
+blockEl.addEventListener('click',e=>{if(!e.target.dataset.b)return;activeBlock=e.target.dataset.b;blockEl.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.b===activeBlock));render();});
+
+const stackSegEl=document.getElementById('stackseg');
+stackSegEl.innerHTML=Object.keys(STACKS).map(s=>`<button data-s="${STACKS[s]}">${s}</button>`).join('');
+stackSegEl.addEventListener('click',e=>{if(!e.target.dataset.s)return;document.getElementById('stack').value=e.target.dataset.s;render();});
+
+const galleryEl=document.getElementById('gallery');
+function renderGallery(){
+  const list=TEMPLATES.filter(t=>activeCat==="全部"||t.cat===activeCat);
+  galleryEl.innerHTML=list.map(t=>{const i=TEMPLATES.indexOf(t);return `<div class="card${i===activeIdx?' on':''}" data-i="${i}"><div class="preview" style="background:${t.grad}"><div class="px"></div><span style="color:${t.fg};font-family:${t.ff},sans-serif">${t.name}</span></div><div class="card-meta"><span class="card-name">${t.name}</span><span class="card-cat">${t.cat}</span></div></div>`;}).join('');
+}
+galleryEl.addEventListener('click',e=>{const c=e.target.closest('.card');if(!c)return;activeIdx=+c.dataset.i;document.getElementById('headline').value=TEMPLATES[activeIdx].sample;renderGallery();render();});
+
+document.getElementById('lang').addEventListener('click',e=>{if(!e.target.dataset.l)return;lang=e.target.dataset.l;document.querySelectorAll('#lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===lang));render();});
+
+['name','badge','headline','cta','stack'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+const val=id=>document.getElementById(id).value.trim();
+
+function render(){
+  const t=TEMPLATES[activeIdx];
+  document.getElementById('lockedStyle').innerHTML=`<b>${t.name}</b> · ${t.cat}<br>${t.zhStyle}`;
+  const badge=val('badge'), name=val('name')||'____', headline=val('headline')||'____', cta=val('cta')||'____', stack=val('stack')||'React + Tailwind';
+  let txt;
+  if(lang==="zh"){
+    txt=
+`帮我做一个高质量的「${activeBlock}」,产品是「${name}」。
+技术栈:${stack}。
+
+结构:${BLOCKS[activeBlock].zh}。
+视觉风格:${t.zhStyle}。
+背景:${t.bg.zh}。
+字体:${t.font}(展示字用于标题,正文字用于段落)。
+配色:${t.color.zh}。
+${badge?`徽章:${badge}。\n`:''}主标题:"${headline}"。
+按钮:${cta}(第一个为主按钮高亮,第二个为次按钮暗色)。
+
+${GUARD.zh}`;
+  }else{
+    txt=
+`Build a high-fidelity ${enBlock(activeBlock)} for "${name}".
+Stack: ${stack}.
+
+Structure: ${BLOCKS[activeBlock].en}.
+Aesthetic: ${t.enStyle}.
+Background: ${t.bg.en}.
+Fonts: ${t.font} (display font for headings, body font for paragraphs).
+Colors: ${t.color.en} — dominant color across large areas, accent only on key elements.
+${badge?`Badge: ${badge}.\n`:''}Headline: "${headline}".
+Buttons: ${cta} (first = primary/highlighted, second = secondary/dark).
+
+${GUARD.en}`;
+  }
+  document.getElementById('output').textContent=txt;
+}
+function enBlock(b){return {"Hero 首屏":"Hero section","完整落地页":"full landing page","功能展示区":"features section","定价区":"pricing section","作品集网格":"portfolio grid","CTA 召唤区":"CTA section","页脚 Footer":"footer section","注册 / 候补页":"signup / waitlist page"}[b];}
+
+document.getElementById('copy').addEventListener('click',function(){
+  navigator.clipboard.writeText(document.getElementById('output').textContent);
+  this.textContent='已复制 ✓';this.classList.add('done');
+  setTimeout(()=>{this.textContent='复制';this.classList.remove('done')},1600);
+});
+
+renderGallery(); render();
+</script>
+</body>
+</html>
